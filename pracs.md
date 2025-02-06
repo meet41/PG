@@ -1,165 +1,76 @@
-# prac 6
-```
-% Define symptoms for diseases
-symptom(flu, fever).
-symptom(flu, cough).
-symptom(flu, shortness_of_breath).
-symptom(migraine, headache).
-symptom(migraine, nausea).
-symptom(migraine, vomiting).
+Here is the complete code for generating a Naïve Bayes classifier and evaluating it using the Playtennis and Breast Cancer datasets in Python for Google Colab:
 
-% Predict disease based on symptoms
-diagnose(Disease) :-
-    findall(Symptom, symptom(Disease, Symptom), Symptoms),
-    write('Symptoms of '), write(Disease), write(': '), write(Symptoms), nl.
+### Python Code for Google Colab
 
-% Display symptoms based on disease
-predict(Symptoms, Disease) :-
-    findall(D, (member(S, Symptoms), symptom(D, S)), Diseases),
-    sort(Diseases, UniqueDiseases),
-    write('Possible diseases: '), write(UniqueDiseases), nl.
+```python
+# Import necessary libraries
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 
-% Example Queries and Outputs:
-% ?- predict([fever, cough, shortness_of_breath], Disease).
-% Possible diseases: [flu]
+# Load Playtennis Dataset
+url_playtennis = "URL_TO_PLAYTENNIS_DATASET"
+playtennis_data = pd.read_csv(url_playtennis)
 
-% ?- diagnose(flu).
-% Symptoms of flu: [fever, cough, shortness_of_breath]
-```
-# prac 7
-```
-append([], L, L).
-append([H|T], L, [H|R]) :- append(T, L, R).
+# Process Playtennis Dataset
+# Assuming the dataset has columns: 'Outlook', 'Temperature', 'Humidity', 'Wind', 'PlayTennis'
+# Encode categorical variables if necessary
+playtennis_data = pd.get_dummies(playtennis_data, columns=['Outlook', 'Temperature', 'Humidity', 'Wind'])
+X_playtennis = playtennis_data.drop('PlayTennis', axis=1)
+y_playtennis = playtennis_data['PlayTennis']
 
-% Example Query and Output:
-% ?- append([1, 2], [3, 4], Result).
-% Result = [1, 2, 3, 4].
-```
-# prac 8
-```
-reverse([], []).
-reverse([H|T], R) :- reverse(T, RevT), append(RevT, [H], R).
+# Split the Playtennis dataset
+X_train_play, X_test_play, y_train_play, y_test_play = train_test_split(X_playtennis, y_playtennis, test_size=0.3, random_state=42)
 
-% Example Query and Output:
-% ?- reverse([1, 2, 3, 4], Result).
-% Result = [4, 3, 2, 1].
-```
-# prac 9
-```
-nth_element(1, [H|_], H).
-nth_element(N, [_|T], Elem) :-
-    N > 1,
-    N1 is N - 1,
-    nth_element(N1, T, Elem).
+# Create and train Naïve Bayes model for Playtennis dataset
+model_play = GaussianNB()
+model_play.fit(X_train_play, y_train_play)
+y_pred_play = model_play.predict(X_test_play)
 
-% Example Query and Output:
-% ?- nth_element(3, [10, 20, 30, 40, 50], Element).
-% Element = 30.
-```
-# prac 10
-```
-member(X, [X|_]).
-member(X, [_|T]) :- member(X, T).
+# Evaluate model for Playtennis dataset
+conf_matrix_play = confusion_matrix(y_test_play, y_pred_play)
+accuracy_play = accuracy_score(y_test_play, y_pred_play)
+class_report_play = classification_report(y_test_play, y_pred_play)
 
-% Example Query and Output:
-% ?- member(3, [1, 2, 3, 4, 5]).
-% true.
-```
+print("Confusion Matrix for Playtennis Dataset:")
+print(conf_matrix_play)
+print(f"Overall Accuracy: {accuracy_play:.2f}")
+print("Classification Report:")
+print(class_report_play)
 
+# Load Breast Cancer Dataset
+from sklearn.datasets import load_breast_cancer
+breast_cancer_data = load_breast_cancer(as_frame=True)
+X_cancer = breast_cancer_data.data
+y_cancer = breast_cancer_data.target
 
+# Split the Breast Cancer dataset
+X_train_cancer, X_test_cancer, y_train_cancer, y_test_cancer = train_test_split(X_cancer, y_cancer, test_size=0.3, random_state=42)
 
-## Prolog programs
-### 6. Expert System for Medical Diagnosis
+# Create and train Naïve Bayes model for Breast Cancer dataset
+model_cancer = GaussianNB()
+model_cancer.fit(X_train_cancer, y_train_cancer)
+y_pred_cancer = model_cancer.predict(X_test_cancer)
 
-```prolog
-% Define symptoms for diseases
-symptom(flu, fever).
-symptom(flu, cough).
-symptom(flu, shortness_of_breath).
-symptom(migraine, headache).
-symptom(migraine, nausea).
-symptom(migraine, vomiting).
+# Evaluate model for Breast Cancer dataset
+conf_matrix_cancer = confusion_matrix(y_test_cancer, y_pred_cancer)
+accuracy_cancer = accuracy_score(y_test_cancer, y_pred_cancer)
+class_report_cancer = classification_report(y_test_cancer, y_pred_cancer)
 
-% Predict disease based on symptoms
-diagnose(Disease) :-
-    findall(Symptom, symptom(Disease, Symptom), Symptoms),
-    write('Symptoms of '), write(Disease), write(': '), write(Symptoms), nl.
-
-% Display symptoms based on disease
-predict(Symptoms, Disease) :-
-    findall(D, (member(S, Symptoms), symptom(D, S)), Diseases),
-    sort(Diseases, UniqueDiseases),
-    write('Possible diseases: '), write(UniqueDiseases), nl.
+print("Confusion Matrix for Breast Cancer Dataset:")
+print(conf_matrix_cancer)
+print(f"Overall Accuracy: {accuracy_cancer:.2f}")
+print("Classification Report:")
+print(class_report_cancer)
 ```
 
-**Example Queries and Outputs:**
+### Steps in Google Colab
+1. Open [Google Colab](https://colab.research.google.com/).
+2. Create a new notebook.
+3. Copy and paste the above code into a cell in the notebook.
+4. Replace `"URL_TO_PLAYTENNIS_DATASET"` with the actual URL of the Playtennis dataset.
+5. Run the cell to load the datasets, create the Naïve Bayes classifiers, and evaluate them.
 
-- Predict disease based on symptoms:
-  ```prolog
-  ?- predict([fever, cough, shortness_of_breath], Disease).
-  Possible diseases: [flu]
-  ```
-
-- Display symptoms based on disease:
-  ```prolog
-  ?- diagnose(flu).
-  Symptoms of flu: [fever, cough, shortness_of_breath]
-  ```
-
-### 7. Prolog Program to Append Two Lists
-
-```prolog
-append([], L, L).
-append([H|T], L, [H|R]) :- append(T, L, R).
-```
-
-**Example Query and Output:**
-
-```prolog
-?- append([1, 2], [3, 4], Result).
-Result = [1, 2, 3, 4].
-```
-
-### 8. Prolog Program to Reverse a List
-
-```prolog
-reverse([], []).
-reverse([H|T], R) :- reverse(T, RevT), append(RevT, [H], R).
-```
-
-**Example Query and Output:**
-
-```prolog
-?- reverse([1, 2, 3, 4], Result).
-Result = [4, 3, 2, 1].
-```
-
-### 9. Prolog Program to Find the Nth Element from a List of Integers
-
-```prolog
-nth_element(1, [H|_], H).
-nth_element(N, [_|T], Elem) :- N > 1, N1 is N - 1, nth_element(N1, T, Elem).
-```
-
-**Example Query and Output:**
-
-```prolog
-?- nth_element(3, [10, 20, 30, 40, 50], Element).
-Element = 30.
-```
-
-### 10. Prolog Program to Check Whether a Given Element is a Member of a List
-
-```prolog
-member(X, [X|_]).
-member(X, [_|T]) :- member(X, T).
-```
-
-**Example Query and Output:**
-
-```prolog
-?- member(3, [1, 2, 3, 4, 5]).
-true.
-```
-
-These Prolog programs can be run in any Prolog interpreter, such as SWI-Prolog. The example queries demonstrate how to use each program and the expected outputs.
+This code will generate the Naïve Bayes classifiers for both datasets, report the overall and class-wise accuracy using confusion matrices, and print the classification reports.
